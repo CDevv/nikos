@@ -3,6 +3,7 @@ ASPARAMS = --32
 LDPARAMS = -melf_i386
 
 objects = obj/loader.o \
+	obj/common/screen.o \
 	obj/main.o
 
 all: nikos.iso
