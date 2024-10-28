@@ -48,10 +48,10 @@ void GlobalDescriptorTable::Setup()
     MakeEntry(entries + 3, 0, 0xFFFFF, FOUR_KB_BLOCKS | PROTECTED_MODE, USER_CODE_SEGMENT);
     MakeEntry(entries + 4, 0, 0xFFFFF, FOUR_KB_BLOCKS | PROTECTED_MODE, USER_DATA_SEGMENT);
 
-    MakeEntry(entries + 5, (uint32_t)&mainTSS, sizeof(TSS), 0, TSS_SEGMENT);
+    //MakeEntry(entries + 5, (uint32_t)&mainTSS, sizeof(TSS), 0, TSS_SEGMENT);
 
     Load();
-    FlushTSS();
+    //FlushTSS();
 }
 
 void GlobalDescriptorTable::Load()
@@ -104,4 +104,15 @@ void GlobalDescriptorTable::FlushTSS()
                :
                : "i"(TSS_SELECTOR)
     );
+}
+
+uint16_t GlobalDescriptorTable::CodeSegment()
+{
+    //return (uint8_t*)&entries[1] - (uint8_t*)entries;
+    return 0x8;
+}
+
+uint16_t GlobalDescriptorTable::DataSegment()
+{
+    return (uint8_t*)&entries[2] - (uint8_t*)entries;
 }

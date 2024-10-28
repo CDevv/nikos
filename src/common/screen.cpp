@@ -3,8 +3,8 @@
 using namespace nikos;
 using namespace nikos::common;
 
-const int maxX = 25;
-const int maxY = 80;
+const int maxX = 80;
+const int maxY = 25;
 
 int Screen::x = 0;
 int Screen::y = 0;
@@ -51,4 +51,13 @@ void Screen::Print(char* str, VGAColor foreground, VGAColor background)
     {
         PutChar(str[i], foreground, background);
     }
+}
+
+void Screen::PrintHex(uint8_t num)
+{
+    char* foo = "00";
+    char* hex = "0123456789ABCDEF";
+    foo[0] = hex[(num >> 4) & 0xF];
+    foo[1] = hex[num & 0xF];
+    Print(foo);
 }

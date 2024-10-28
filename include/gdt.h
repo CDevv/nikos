@@ -78,11 +78,14 @@ namespace nikos
             void Load();
             void LoadTLS(uint16_t selector);
             void FlushTSS();
+            
 
         public:
             GlobalDescriptorTable();
             ~GlobalDescriptorTable();
             void SetTLS(TLSSegment &tls);
+            uint16_t DataSegment();
+            uint16_t CodeSegment();
     };
     
 } // namespace nikos

@@ -5,6 +5,9 @@ LDPARAMS = -melf_i386
 objects = obj/loader.o \
 	obj/common/screen.o \
 	obj/gdt.o \
+	obj/hardware/port.o \
+	obj/hardware/interrupts.o \
+	obj/interruptStubs.o \
 	obj/main.o
 
 all: nikos.iso
