@@ -2,6 +2,7 @@
 #include <common/screen.h>
 #include <gdt.h>
 #include <hardware/interrupts.h>
+#include <hardware/keyboard.h>
 
 using namespace nikos::common;
 using namespace nikos::hardware;
@@ -24,6 +25,7 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     Screen::Print("Loaded GDT!", VGA_COLOR_MAGENTA, VGA_COLOR_BLACK);
 
     InterruptManager interrupts(0x20, &gdt);
+    Keyboard keyboard(&interrupts);
     interrupts.Activate();
     
     while (1);   

@@ -13,11 +13,25 @@ namespace nikos
 {
     namespace hardware
     {
-        class InterruptManager
-    {
-        //friend class InterruptHandler;
-        protected:
+        class InterruptManager;
 
+        class InterruptHandler
+        {
+        protected:
+            uint8_t interruptNumber;
+            InterruptManager *interruptManager;
+            InterruptHandler(uint8_t interruptNumber, InterruptManager *interruptManager);
+            ~InterruptHandler();
+
+        public:
+            virtual uint32_t HandleInterrupt(uint32_t esp);
+        };
+
+        class InterruptManager
+        {
+            friend class InterruptHandler;
+
+        protected:
             struct GateDescriptor
             {
                 uint16_t handlerAddressLowBits;
@@ -36,11 +50,13 @@ namespace nikos
             } __attribute__((packed));
 
             uint16_t hardwareInterruptOffset;
-            //static InterruptManager* ActiveInterruptManager;
-            static void SetInterruptDescriptorTableEntry(uint8_t interrupt,
-                uint16_t codeSegmentSelectorOffset, void (*handler)(),
-                uint8_t DescriptorPrivilegeLevel, uint8_t DescriptorType);
 
+            static InterruptManager* ActiveInterruptManager;
+            InterruptHandler* handlers[256];
+
+            static void SetInterruptDescriptorTableEntry(uint8_t interrupt,
+                                                         uint16_t codeSegmentSelectorOffset, void (*handler)(),
+                                                         uint8_t DescriptorPrivilegeLevel, uint8_t DescriptorType);
 
             static void InterruptIgnore();
 
@@ -84,7 +100,7 @@ namespace nikos
             static void HandleException0x13();
 
             static uint32_t HandleInterrupt(uint8_t interrupt, uint32_t esp);
-            //static uint32_t HandleException(uint8_t interrupt, uint32_t esp);
+            uint32_t DoHandle(uint8_t interrupt, uint32_t esp);
 
             Port8Slow programmableInterruptControllerMasterCommandPort;
             Port8Slow programmableInterruptControllerMasterDataPort;
@@ -92,15 +108,14 @@ namespace nikos
             Port8Slow programmableInterruptControllerSlaveDataPort;
 
         public:
-            InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* globalDescriptorTable);
+            InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable *globalDescriptorTable);
             ~InterruptManager();
             uint16_t HardwareInterruptOffset();
             void Activate();
             void Deactivate();
-    };
+        };
     } // namespace hardware
-    
-} // namespace nikos
 
+} // namespace nikos
 
 #endif
