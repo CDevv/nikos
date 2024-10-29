@@ -1,17 +1,27 @@
-#include <hardware/keyboard.h>
+#include <drivers/keyboard.h>
 #include <common/screen.h>
 
 using namespace nikos;
 using namespace nikos::common;
 using namespace nikos::hardware;
+using namespace nikos::drivers;
 
-Keyboard::Keyboard(InterruptManager* interruptManager)
+KeyboardEventHandler::KeyboardEventHandler() {}
+
+void KeyboardEventHandler::OnKeyUp(char c) {}
+void KeyboardEventHandler::OnKeyDown(char c) {}
+
+Keyboard::Keyboard(InterruptManager* interruptManager, KeyboardEventHandler* eventHandler)
     : InterruptHandler(0x21, interruptManager),
     dataPort(0x60),
     commandPort(0x64)
 {
     SetupKeys();
+    this->eventHandler = eventHandler;
+}
 
+void Keyboard::Activate()
+{
     while (commandPort.Read() & 0x1)
     {
         dataPort.Read();
@@ -47,11 +57,13 @@ uint32_t Keyboard::HandleInterrupt(uint32_t esp)
         {
             if (shiftOn)
             {
-                Screen::PutChar(keys[key].shiftKey, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+                //Screen::PutChar(keys[key].shiftKey, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+                eventHandler->OnKeyDown(keys[key].shiftKey);
             }
             else
             {
-                Screen::PutChar(keys[key].normalKey, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+                //Screen::PutChar(keys[key].normalKey, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+                eventHandler->OnKeyDown(keys[key].normalKey);
             }
         }
     }

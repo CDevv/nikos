@@ -2,10 +2,13 @@
 #include <common/screen.h>
 #include <gdt.h>
 #include <hardware/interrupts.h>
-#include <hardware/keyboard.h>
+#include <drivers/driver.h>
+#include <drivers/keyboard.h>
+#include <drivers/keyboardHandlers.h>
 
 using namespace nikos::common;
 using namespace nikos::hardware;
+using namespace nikos::drivers;
 
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
@@ -25,7 +28,14 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     Screen::Print("Loaded GDT!", VGA_COLOR_MAGENTA, VGA_COLOR_BLACK);
 
     InterruptManager interrupts(0x20, &gdt);
-    Keyboard keyboard(&interrupts);
+    DriverManager driverManager;
+
+    CLIKeyboard kbHandler;
+    Keyboard keyboard(&interrupts, &kbHandler);
+
+    driverManager.AddDriver(&keyboard);
+    driverManager.ActivateAll();
+
     interrupts.Activate();
     
     while (1);   

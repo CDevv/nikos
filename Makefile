@@ -7,7 +7,9 @@ objects = obj/loader.o \
 	obj/gdt.o \
 	obj/hardware/port.o \
 	obj/hardware/interrupts.o \
-	obj/hardware/keyboard.o \
+	obj/drivers/driver.o \
+	obj/drivers/keyboard.o \
+	obj/drivers/keyboardHandlers.o \
 	obj/interruptStubs.o \
 	obj/main.o
 

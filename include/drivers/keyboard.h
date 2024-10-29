@@ -5,10 +5,13 @@
 #include <common/types.h>
 #include <hardware/port.h>
 #include <hardware/interrupts.h>
+#include <drivers/driver.h>
+
+using namespace nikos::hardware;
 
 namespace nikos
 {
-    namespace hardware
+    namespace drivers
     {
         struct Key
         {
@@ -17,20 +20,32 @@ namespace nikos
             bool empty;
         };
 
-        class Keyboard : public InterruptHandler
+        class KeyboardEventHandler
+        {
+            public:
+                KeyboardEventHandler();
+                virtual void OnKeyUp(char c);
+                virtual void OnKeyDown(char c);
+        };
+
+        class Keyboard : public InterruptHandler, public Driver
         {
             Port8 dataPort;
             Port8 commandPort;
 
             Key keys[256];
 
+            KeyboardEventHandler* eventHandler;
+
             public:
-                Keyboard(InterruptManager* interruptManager);
+                Keyboard(InterruptManager* interruptManager, KeyboardEventHandler* eventHandler);
                 ~Keyboard();
                 void SetupKeys();
                 void AddKey(uint8_t index, char normalKey, char shiftKey);
                 void SetEmpty(uint8_t index);
-                uint32_t HandleInterrupt(uint32_t esp);
+
+                virtual uint32_t HandleInterrupt(uint32_t esp);
+                virtual void Activate();
         };
     } // namespace hardware
 } // namespace nikos
