@@ -43,13 +43,14 @@ void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
 }
 
 
-InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* globalDescriptorTable)
+InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* globalDescriptorTable, TaskManager* taskManager)
     : programmableInterruptControllerMasterCommandPort(0x20),
       programmableInterruptControllerMasterDataPort(0x21),
       programmableInterruptControllerSlaveCommandPort(0xA0),
       programmableInterruptControllerSlaveDataPort(0xA1)
 {
     this->hardwareInterruptOffset = hardwareInterruptOffset;
+    this->taskManager = taskManager;
     uint32_t CodeSegment = globalDescriptorTable->CodeSegment();
 
     const uint8_t IDT_INTERRUPT_GATE = 0xE;
@@ -172,6 +173,11 @@ uint32_t InterruptManager::DoHandle(uint8_t interrupt, uint32_t esp)
         Screen::Print("UNHANDLED INTERRUPT 0x");
         Screen::PrintHex(interrupt);
         Screen::Print("\n");
+    }
+
+    if (interrupt == hardwareInterruptOffset)
+    {
+        esp = (uint32_t)taskManager->Schedule((CPUState*)esp);
     }
     
     //Acknowledge the interrupt

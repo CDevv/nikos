@@ -5,6 +5,7 @@
 #include <common/types.h>
 #include <gdt.h>
 #include <hardware/port.h>
+#include <multitasking.h>
 
 using namespace nikos;
 using namespace nikos::common;
@@ -53,6 +54,7 @@ namespace nikos
 
             static InterruptManager* ActiveInterruptManager;
             InterruptHandler* handlers[256];
+            TaskManager* taskManager;
 
             static void SetInterruptDescriptorTableEntry(uint8_t interrupt,
                                                          uint16_t codeSegmentSelectorOffset, void (*handler)(),
@@ -108,7 +110,7 @@ namespace nikos
             Port8Slow programmableInterruptControllerSlaveDataPort;
 
         public:
-            InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable *globalDescriptorTable);
+            InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable *globalDescriptorTable, TaskManager* taskManager);
             ~InterruptManager();
             uint16_t HardwareInterruptOffset();
             void Activate();

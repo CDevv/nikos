@@ -16,6 +16,7 @@ _ZN5nikos8hardware16InterruptManager19HandleException\num\()Ev:
 .global _ZN5nikos8hardware16InterruptManager26HandleInterruptRequest\num\()Ev
 _ZN5nikos8hardware16InterruptManager26HandleInterruptRequest\num\()Ev:
     movb $\num + IRQ_BASE, (interruptNumber)
+    pushl $0
     jmp int_bottom
 .endm
 
@@ -59,11 +60,20 @@ HandleInterruptRequest 0x31
 
 int_bottom:
 
-    pusha
-    pushl %ds
-    pushl %es
-    pushl %fs
-    pushl %gs
+    #pusha
+    #pushl %ds
+    #pushl %es
+    #pushl %fs
+    #pushl %gs
+
+    pushl %ebp
+    pushl %edi
+    pushl %esi
+
+    pushl %edx
+    pushl %ecx
+    pushl %ebx
+    pushl %eax
 
     // call the C++ function
     pushl %esp
@@ -72,13 +82,22 @@ int_bottom:
     //add %esp, 6
     mov %eax, %esp
 
-    popl %gs
-    popl %fs
-    popl %es
-    popl %ds
-    popa
+    #popl %gs
+    #popl %fs
+    #popl %es
+    #popl %ds
+    #popa
 
-    iret
+    popl %eax
+    popl %ebx
+    popl %ecx
+    popl %edx
+
+    popl %esi
+    popl %edi
+    popl %ebp
+
+    add $4, %esp
 
 
 .global _ZN5nikos8hardware16InterruptManager15InterruptIgnoreEv
