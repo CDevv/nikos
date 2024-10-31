@@ -5,6 +5,7 @@
 #include <drivers/driver.h>
 #include <drivers/keyboard.h>
 #include <drivers/keyboardHandlers.h>
+#include <syscalls.h>
 #include <multitasking.h>
 
 using namespace nikos::common;
@@ -20,11 +21,16 @@ extern "C" void callConstructors()
         (*i)();
 }
 
+void syscall(char* str)
+{
+    asm("int $0x80" : : "a" (4), "b" (str));
+}
+
 void taskA()
 {
     while (true)
     {
-        Screen::Print("A");
+        syscall("A");
     }
     
 }
@@ -33,7 +39,7 @@ void taskB()
 {
     while (true)
     {
-        Screen::Print("B");
+        syscall("B");
     }
 }
 
@@ -54,6 +60,8 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     taskManager.AddTask(&t2);
 
     InterruptManager interrupts(0x20, &gdt, &taskManager);
+    SyscallHandler syscalls(&interrupts, 0x80);
+
     DriverManager driverManager;
 
     //CLIKeyboard kbHandler;

@@ -12,6 +12,7 @@ objects = obj/loader.o \
 	obj/drivers/keyboardHandlers.o \
 	obj/interruptStubs.o \
 	obj/multitasking.o \
+	obj/syscalls.o \
 	obj/main.o
 
 all: nikos.iso
