@@ -10,6 +10,7 @@ objects = obj/loader.o \
 	obj/drivers/driver.o \
 	obj/drivers/keyboard.o \
 	obj/drivers/keyboardHandlers.o \
+	obj/drivers/ata.o \
 	obj/interruptStubs.o \
 	obj/multitasking.o \
 	obj/syscalls.o \

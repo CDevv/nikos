@@ -5,6 +5,7 @@
 #include <drivers/driver.h>
 #include <drivers/keyboard.h>
 #include <drivers/keyboardHandlers.h>
+#include <drivers/ata.h>
 #include <syscalls.h>
 #include <multitasking.h>
 
@@ -56,8 +57,8 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     Task t1(&gdt, &taskA);
     Task t2(&gdt, &taskB);
 
-    taskManager.AddTask(&t1);
-    taskManager.AddTask(&t2);
+    //taskManager.AddTask(&t1);
+    //taskManager.AddTask(&t2);
 
     InterruptManager interrupts(0x20, &gdt, &taskManager);
     SyscallHandler syscalls(&interrupts, 0x80);
@@ -69,6 +70,20 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
 
     //driverManager.AddDriver(&keyboard);
     //driverManager.ActivateAll();
+
+    Screen::Print("ATA Primary Master: ");
+    ATA ata0m(true, 0x1F0);
+    ata0m.Identify();
+
+    Screen::Print("ATA Primary Slave: ");
+    ATA ata0s(false, 0x1F0);
+    ata0s.Identify();
+
+    ata0s.Write28(0, (uint8_t*)"Niko's ata drive", 17);
+    ata0s.Flush();
+
+    Screen::Print("\n");
+    ata0s.Read28(0, 17);
 
     interrupts.Activate();
     
