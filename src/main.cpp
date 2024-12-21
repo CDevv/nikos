@@ -6,6 +6,7 @@
 #include <drivers/keyboard.h>
 #include <drivers/keyboardHandlers.h>
 #include <drivers/ata.h>
+#include <filesystem/msdospart.h>
 #include <syscalls.h>
 #include <multitasking.h>
 
@@ -79,11 +80,14 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     ATA ata0s(false, 0x1F0);
     ata0s.Identify();
 
-    ata0s.Write28(0, (uint8_t*)"Niko's ata drive", 17);
-    ata0s.Flush();
+    //ata0m.Write28(0, (uint8_t*)"Niko's ata drive", 17);
+    //ata0m.Flush();
 
     Screen::Print("\n");
-    ata0s.Read28(0, 17);
+    //ata0m.Read28(0, 17);
+
+    Screen::Print("\n\n");
+    filesystem::MSDOSPartitionTable::ReadPartitions(&ata0m);
 
     interrupts.Activate();
     

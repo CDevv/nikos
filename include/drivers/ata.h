@@ -30,7 +30,7 @@ namespace nikos
             ~ATA();
 
             void Identify();
-            void Read28(uint32_t sectorNum, int count);
+            void Read28(uint32_t sectorNum, uint8_t* data, int count);
             void Write28(uint32_t sectorNum, uint8_t *data, uint32_t count);
             void Flush();
         };

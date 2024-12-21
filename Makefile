@@ -11,6 +11,7 @@ objects = obj/loader.o \
 	obj/drivers/keyboard.o \
 	obj/drivers/keyboardHandlers.o \
 	obj/drivers/ata.o \
+	obj/filesystem/msdospart.o \
 	obj/interruptStubs.o \
 	obj/multitasking.o \
 	obj/syscalls.o \

@@ -42,7 +42,7 @@ void ATA::Identify()
     lbaMidPort.Write(0);
     lbaHiPort.Write(0);
 
-    commandPort.Write(0x2C); //identify cmd
+    commandPort.Write(0xEC); //identify cmd
 
     status = commandPort.Read();
     if (status == 0x00)
@@ -74,7 +74,7 @@ void ATA::Identify()
     Screen::Print("\n");
 }
 
-void ATA::Read28(uint32_t sectorNum, int count)
+void ATA::Read28(uint32_t sectorNum, uint8_t* data, int count)
 {
     if (sectorNum > 0x0FFFFFFF)
     {
@@ -106,21 +106,14 @@ void ATA::Read28(uint32_t sectorNum, int count)
 
     for (int i = 0; i < count; i+=2)
     {
-        uint16_t data = dataPort.Read();
+        uint16_t wdata = dataPort.Read();
 
-        char *text = "  \0";
-        text[0] = data & 0xFF;
+        data[i] = wdata & 0x00FF;
 
         if (i+1 < count)
         {
-            text[1] = (data >> 8) & 0xFF;
+            data[i+1] = (wdata >> 8) & 0x00FF;
         }
-        else
-        {
-            text[1] = '\0';
-        }
-
-        Screen::Print(text);
     }
     
     for (int i = count + (count % 2); i < 512; i+=2)
