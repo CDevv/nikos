@@ -1,5 +1,6 @@
 #include <filesystem/msdospart.h>
 #include <common/screen.h>
+#include <filesystem/fat.h>
 
 using namespace nikos;
 using namespace nikos::common;
@@ -12,11 +13,13 @@ void MSDOSPartitionTable::ReadPartitions(ATA* hd)
 
     hd->Read28(0, (uint8_t*)&mbr, sizeof(MasterBootRecord));
 
+    /*
     for(int i = 0x1BE; i <= 0x01FF; i++)
     {
         Screen::PrintHex(((uint8_t*)&mbr)[i]);
         Screen::Print(" ");
     }
+    */
     Screen::Print("\n");
 
     if (mbr.magicnumber != 0xAA55)
@@ -45,7 +48,8 @@ void MSDOSPartitionTable::ReadPartitions(ATA* hd)
         }
         
         Screen::PrintHex(mbr.primaryPartition[i].partition_id);
+        Screen::Print("\n");
 
-        //ReadBiosBlock
+        filesystem::ReadBiosBlock(hd, mbr.primaryPartition[i].start_lba);
     }   
 }

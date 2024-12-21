@@ -102,7 +102,7 @@ void ATA::Read28(uint32_t sectorNum, uint8_t* data, int count)
         return;
     }
     
-    Screen::Print("Reading ATA Drive: ");
+    //Screen::Print("Reading ATA Drive: ");
 
     for (int i = 0; i < count; i+=2)
     {
