@@ -8,6 +8,7 @@
 #include <drivers/ata.h>
 #include <filesystem/msdospart.h>
 #include <filesystem/fat.h>
+#include <memorymanagement.h>
 #include <syscalls.h>
 #include <multitasking.h>
 
@@ -53,6 +54,27 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
 
     GlobalDescriptorTable gdt;
     Screen::Print("Loaded GDT!", VGA_COLOR_MAGENTA, VGA_COLOR_BLACK);
+
+    Screen::Print("\n");
+
+    uint32_t* memUpper = (uint32_t*)(((size_t)multiboot_structure) + 8);
+    size_t heap = 10*1024*1024;
+    MemoryManager memoryManager(heap, (*memUpper)*1024 - heap - 10*1024);
+
+    Screen::Print("heap: 0x");
+    Screen::PrintHex((heap >> 24) & 0xFF);
+    Screen::PrintHex((heap >> 16) & 0xFF);
+    Screen::PrintHex((heap >> 8) & 0xFF);
+    Screen::PrintHex(heap & 0xFF);
+    Screen::Print("\n");
+
+    void* allocated = MemoryManager::malloc(1024);
+    Screen::Print("allocated: 0x");
+    Screen::PrintHex(((size_t)allocated >> 24) & 0xFF);
+    Screen::PrintHex(((size_t)allocated >> 16) & 0xFF);
+    Screen::PrintHex(((size_t)allocated >> 8) & 0xFF);
+    Screen::PrintHex((size_t)allocated & 0xFF);
+    Screen::Print("\n");
 
     TaskManager taskManager;
 

@@ -15,6 +15,7 @@ objects = obj/loader.o \
 	obj/filesystem/fat.o \
 	obj/interruptStubs.o \
 	obj/multitasking.o \
+	obj/memorymanagement.o \
 	obj/syscalls.o \
 	obj/main.o
 
