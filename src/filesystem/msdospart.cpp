@@ -53,3 +53,12 @@ void MSDOSPartitionTable::ReadPartitions(ATA* hd)
         filesystem::ReadBiosBlock(hd, mbr.primaryPartition[i].start_lba);
     }   
 }
+
+MasterBootRecord MSDOSPartitionTable::ReadMasterBootRecord(ATA *hd)
+{
+    MasterBootRecord mbr;
+
+    hd->Read28(0, (uint8_t*)&mbr, sizeof(MasterBootRecord));
+
+    return mbr;
+}

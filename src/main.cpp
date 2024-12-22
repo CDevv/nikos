@@ -7,6 +7,7 @@
 #include <drivers/keyboardHandlers.h>
 #include <drivers/ata.h>
 #include <filesystem/msdospart.h>
+#include <filesystem/fat.h>
 #include <syscalls.h>
 #include <multitasking.h>
 
@@ -87,7 +88,11 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     //ata0m.Read28(0, 17);
 
     Screen::Print("\n\n");
-    filesystem::MSDOSPartitionTable::ReadPartitions(&ata0m);
+    //filesystem::MSDOSPartitionTable::ReadPartitions(&ata0m);
+    
+    filesystem::FileAllocationTable32 fat32(&ata0m, 0);
+
+    fat32.ReadFile("FILE1.TXT");
 
     interrupts.Activate();
     

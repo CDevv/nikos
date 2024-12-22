@@ -46,6 +46,7 @@ namespace nikos
         {
         public:
             static void ReadPartitions(ATA *hd);
+            static MasterBootRecord ReadMasterBootRecord(ATA *hd);
         };
     } // namespace filesystem
 } // namespace nikos

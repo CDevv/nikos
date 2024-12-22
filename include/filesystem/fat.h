@@ -4,6 +4,7 @@
 
 #include <common/types.h>
 #include <drivers/ata.h>
+#include <filesystem/msdospart.h>
 
 using namespace nikos;
 using namespace nikos::common;
@@ -62,7 +63,33 @@ namespace nikos
             uint32_t size;
         } __attribute__((packed));
 
+        struct NameExt
+        {
+            uint8_t name[8];
+            uint8_t ext[3];
+        } __attribute__((packed));
+
+        class FileAllocationTable32
+        {
+        protected:
+            ATA *hd;
+            filesystem::PartitionTableEntry partitionTable;
+            uint32_t partitionOffset;
+            BiosParameterBlock32 bpb;
+            uint32_t fatStart;
+            uint32_t fatSize;
+            uint32_t dataStart;
+            uint32_t rootStart;
+
+        public:
+            FileAllocationTable32(ATA *hd, int partitionNum);
+            ~FileAllocationTable32();
+            void ReadBiosParameterBlock();
+            void ReadFile(char *fileName);
+        };
+
         void ReadBiosBlock(ATA *hd, uint32_t partitionOffset);
+        void ReadFile(ATA *hd, uint32_t partitionOffset, char *fileName);
     } // namespace filesystem
 } // namespace nikos
 
