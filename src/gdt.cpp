@@ -1,12 +1,7 @@
 #include <gdt.h>
+#include <memorymanagement.h>
 
 using namespace nikos;
-
-void memset(char *to_set, size_t size, char value) {
-  for (size_t i = 0; i < size; i++) {
-    to_set[i] = value;
-  }
-}
 
 constexpr uint8_t NULL_SEGMENT = 0x00;
 constexpr uint8_t USER_CODE_SEGMENT = 0xFA;

@@ -61,3 +61,33 @@ void Screen::PrintHex(uint8_t num)
     foo[1] = hex[num & 0xF];
     Print(foo);
 }
+
+void Screen::PrintInt(uint32_t num)
+{
+    if (num == 0)
+    {
+        Screen::Print("0");
+        return;
+    }
+
+    char buf[32] = "                               ";
+    int indexer = 31;
+
+    while (num > 0)
+    {
+        int remainder = num % 10;
+        char c = remainder + '0';
+        buf[indexer] = c;
+        num = num / 10;
+        indexer--;
+    }
+
+    for (int i = 0; i < 32; i++)
+    {
+        char c = buf[i];
+        if (c != ' ')
+        {
+            Screen::PutChar(c, VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+        }
+    }
+}

@@ -39,6 +39,7 @@ namespace nikos
                 static void PutChar(char c, VGAColor foreground, VGAColor background);
                 static void Print(char* str, VGAColor foreground = VGA_COLOR_WHITE, VGAColor background = VGA_COLOR_BLACK);
                 static void PrintHex(uint8_t num);
+                static void PrintInt(uint32_t num);
         };
     } // namespace common
     

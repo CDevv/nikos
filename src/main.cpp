@@ -12,6 +12,8 @@
 #include <syscalls.h>
 #include <multitasking.h>
 
+#include <multiboot.h>
+
 using namespace nikos::common;
 using namespace nikos::hardware;
 using namespace nikos::drivers;
@@ -57,6 +59,52 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
 
     Screen::Print("\n");
 
+    multiboot_info_t* bootinfo = (multiboot_info_t*)multiboot_structure;
+    uint32_t memSizeKb = 1024 + bootinfo->mem_lower + bootinfo->mem_upper*64;
+
+    Screen::Print("Mapping memory..\n");
+
+    uint32_t* memUpper = (uint32_t*)(((size_t)multiboot_structure) + 8);
+    size_t heap = 10*1024*1024;
+    MemoryManager memoryManager(heap, (*memUpper)*1024 - heap - 10*1024);
+
+    MemoryInfoEntry* memoryTable = (MemoryInfoEntry*)(bootinfo->mmap_addr + 4);
+    uint16_t mmapEntriesCount = bootinfo->mmap_length / (sizeof(MemoryInfoEntry));
+    for (int i = 0; i < mmapEntriesCount; i++)
+    {
+        Screen::Print("Region ");
+        Screen::PrintInt(i);
+
+        Screen::Print(" Start: ");
+        Screen::PrintHex(memoryTable[i].addr_low);
+
+        Screen::Print(" Size: ");
+        Screen::PrintHex(memoryTable[i].length_low);
+
+        Screen::Print(" Type: ");
+        Screen::PrintInt(memoryTable[i].type);
+        Screen::Print("\n");
+
+        if (memoryTable[i].type == 1)
+        {
+            memoryManager.InitAllocator((void*)memoryTable[i].addr_low,
+            (void*)(char*)memoryTable[i].addr_low + memoryTable[i].length_low);
+        }
+    }
+
+    MemoryManager::malloc(1024);
+
+    MemoryStats memoryStats = memoryManager.GetStats();
+
+    Screen::Print("Free Memory: ");
+    Screen::PrintInt(memoryStats.freeMemory);
+    Screen::Print("\nAllocated Memory: ");
+    Screen::PrintInt(memoryStats.allocatedMemory);
+    Screen::Print("\nNumber of Chunks: ");
+    Screen::PrintInt(memoryStats.numChunks);
+    Screen::Print("\n");
+    
+    /*
     uint32_t* memUpper = (uint32_t*)(((size_t)multiboot_structure) + 8);
     size_t heap = 10*1024*1024;
     MemoryManager memoryManager(heap, (*memUpper)*1024 - heap - 10*1024);
@@ -75,6 +123,7 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     Screen::PrintHex(((size_t)allocated >> 8) & 0xFF);
     Screen::PrintHex((size_t)allocated & 0xFF);
     Screen::Print("\n");
+    */
 
     TaskManager taskManager;
 
