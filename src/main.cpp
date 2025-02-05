@@ -8,6 +8,7 @@
 #include <drivers/ata.h>
 #include <filesystem/msdospart.h>
 #include <filesystem/fat.h>
+#include <memory/paging.h>
 #include <memorymanagement.h>
 #include <syscalls.h>
 #include <multitasking.h>
@@ -54,6 +55,7 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     Screen::Print("Hello world!\n");
     Screen::Print("Hello again!\n", VGA_COLOR_MAGENTA, VGA_COLOR_BLACK);
 
+    memory::Pager paging;
     GlobalDescriptorTable gdt;
     Screen::Print("Loaded GDT!", VGA_COLOR_MAGENTA, VGA_COLOR_BLACK);
 
