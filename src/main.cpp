@@ -94,7 +94,7 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
         }
     }
 
-    MemoryManager::malloc(1024);
+    malloc(1024);
 
     MemoryStats memoryStats = memoryManager.GetStats();
 
@@ -157,6 +157,8 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     //ata0m.Write28(0, (uint8_t*)"Niko's ata drive", 17);
     //ata0m.Flush();
 
+    
+
     Screen::Print("\n");
     //ata0m.Read28(0, 17);
 
@@ -165,7 +167,12 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int /*multi
     
     filesystem::FileAllocationTable32 fat32(&ata0m, 0);
 
-    fat32.ReadFile("FILE1.TXT");
+    fat32.ReadFile("FILE1   TXT");
+    fat32.ReadFile("FILE2   TXT");
+
+    fat32.ListEntries();
+
+    fat32.ReadFileInfo("FILE1   TXT");
 
     interrupts.Activate();
     

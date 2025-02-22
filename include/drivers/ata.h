@@ -25,6 +25,9 @@ namespace nikos
             Port8 commandPort;
             Port8 controlPort;
 
+            void EnterLba(uint32_t lba, uint8_t sectorCount);
+            void BlockUntilDriveReady();
+
         public:
             ATA(bool master, uint16_t portBase);
             ~ATA();
@@ -32,6 +35,8 @@ namespace nikos
             void Identify();
             void Read28(uint32_t sectorNum, uint8_t* data, int count);
             void Write28(uint32_t sectorNum, uint8_t *data, uint32_t count);
+            void ReadSectors(uint32_t sectors, uint8_t *buffer, uint32_t lba);
+            void WriteSectors(uint32_t sectors, uint8_t *buffer, uint32_t lba);
             void Flush();
         };
     } // namespace drivers

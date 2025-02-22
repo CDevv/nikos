@@ -53,7 +53,7 @@ namespace nikos
             uint8_t attributes;
             uint8_t reserved;
             uint8_t cTimeTenth;
-            uint16_t cTume;
+            uint16_t cTime;
             uint16_t cDate;
             uint16_t aTime;
             uint16_t firstClusterHi;
@@ -63,19 +63,48 @@ namespace nikos
             uint32_t size;
         } __attribute__((packed));
 
+        struct DirectoryEntry
+        {
+            char *name;
+            bool readOnly;
+            bool isDirectory;
+            uint32_t size;
+            uint32_t inode;
+        };
+
+        struct Directory
+        {
+            size_t childrenCount;
+            DirectoryEntry *children;
+        };       
+
         struct NameExt
         {
             uint8_t name[8];
             uint8_t ext[3];
         } __attribute__((packed));
 
+        struct LongFileNameEntry
+        {
+            uint8_t sequenceNum;
+            uint16_t chars1[5];
+            uint8_t attribute;
+            uint8_t type;
+            uint8_t checksum;
+            uint8_t chars2[6];
+            uint16_t reserved;
+            uint16_t chars3[2];
+        } __attribute__((packed));   
+
         class FileAllocationTable32
         {
         protected:
             ATA *hd;
+            uint32_t *fileAllocationTable;
             filesystem::PartitionTableEntry partitionTable;
             uint32_t partitionOffset;
             BiosParameterBlock32 bpb;
+            uint32_t clusterSize;
             uint32_t fatStart;
             uint32_t fatSize;
             uint32_t dataStart;
@@ -85,7 +114,11 @@ namespace nikos
             FileAllocationTable32(ATA *hd, int partitionNum);
             ~FileAllocationTable32();
             void ReadBiosParameterBlock();
+            void ReadCluster(int32_t SIZE, uint32_t nextFileCluster);
+            DirectoryEntry32 FindCluster(char *path);
             void ReadFile(char *fileName);
+            void ReadFileInfo(char *fileName);
+            void ListEntries();
         };
 
         void ReadBiosBlock(ATA *hd, uint32_t partitionOffset);

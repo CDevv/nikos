@@ -41,25 +41,31 @@ namespace nikos
     class MemoryManager
     {
     protected:
-        MemoryChunk *first;
-        MemoryChunk *nextFreeChunk;
-        MemoryChunk *InsertChunk(MemoryChunk* prev, size_t offset);
-        void DeleteChunk(MemoryChunk* chunk);
-        MemoryChunk *FindFreeAllocation(size_t request);
+        
+        
+        
+        
 
     public:
+    MemoryChunk *first;
+    MemoryChunk *nextFreeChunk;
+
         static MemoryManager *activeMemoryManager;
         MemoryManager(size_t start, size_t size);
         ~MemoryManager();
+        MemoryChunk *InsertChunk(MemoryChunk* prev, size_t offset);
+        MemoryChunk *FindFreeAllocation(size_t request);
+        void DeleteChunk(MemoryChunk* chunk);
         MemoryStats GetStats();
-        uint8_t InitAllocator(void* bottom, void* top);
-        
+        uint8_t InitAllocator(void* bottom, void* top);      
 
-        static void *malloc(size_t size);
-        static void *malloc_align(size_t size, uint32_t alignment);
-        static void *realloc(void* old_alloc, size_t new_size);
-        static void free(void *ptr);
+        
     };
+
+    void *malloc(size_t size);
+    void *malloc_align(size_t size, uint32_t alignment);
+    static void *realloc(void *old_alloc, size_t new_size);
+    void free(void *ptr);
 
 } // namespace nikos
 

@@ -185,14 +185,14 @@ void nikos::memset(char *to_set, size_t size, char value)
     }
 }
 
-void *MemoryManager::malloc(size_t size)
+void *nikos::malloc(size_t size)
 {
-    if (activeMemoryManager == 0)
+    if (MemoryManager::activeMemoryManager == 0)
     {
         return 0;
     }
 
-    MemoryChunk *allocation = activeMemoryManager->FindFreeAllocation(0);
+    MemoryChunk *allocation = MemoryManager::activeMemoryManager->FindFreeAllocation(0);
 
     if (checksum(allocation) != allocation->checksum)
     {
@@ -204,26 +204,31 @@ void *MemoryManager::malloc(size_t size)
 
     if (allocation->size > size + 4 * sizeof(MemoryChunk))
     {
-        activeMemoryManager->InsertChunk(allocation, size);
+        MemoryManager::activeMemoryManager->InsertChunk(allocation, size);
     }
     else
     {
         allocation->checksum = checksum(allocation);
     }
 
-    if (activeMemoryManager->nextFreeChunk == allocation)
+    if (MemoryManager::activeMemoryManager->nextFreeChunk == allocation)
     {
-        activeMemoryManager->nextFreeChunk = activeMemoryManager->FindFreeAllocation(0);
+        MemoryManager::activeMemoryManager->nextFreeChunk = MemoryManager::activeMemoryManager->FindFreeAllocation(0);
     }
 
     return allocation + 1;
 }
 
-void *MemoryManager::malloc_align(size_t size, uint32_t alignment)
+void *nikos::malloc_align(size_t size, uint32_t alignment)
 {
+    if (MemoryManager::activeMemoryManager == 0)
+    {
+        return 0;
+    }
+
     MemoryChunk *allocation = (MemoryChunk *)malloc(size + alignment + 2 * sizeof(MemoryChunk) - 2);
 
-    activeMemoryManager->InsertChunk(allocation,
+    MemoryManager::activeMemoryManager->InsertChunk(allocation,
                                      (((uint32_t)allocation + 2 * sizeof(MemoryChunk)) % 2));
 
     MemoryChunk *alignedAllocation = allocation->next;
@@ -237,8 +242,13 @@ void *MemoryManager::malloc_align(size_t size, uint32_t alignment)
     return alignedAllocation + 1;
 }
 
-void MemoryManager::free(void *ptr)
+void nikos::free(void *ptr)
 {
+    if (MemoryManager::activeMemoryManager == 0)
+    {
+        return;
+    }
+
     MemoryChunk *chunk = (MemoryChunk *)ptr - 1;
 
     if (chunk->checksum != checksum(chunk))
@@ -260,27 +270,27 @@ void MemoryManager::free(void *ptr)
     {
         return;
     }
-    else if ((uint32_t)activeMemoryManager->nextFreeChunk > (uint32_t)chunk)
+    else if ((uint32_t)MemoryManager::activeMemoryManager->nextFreeChunk > (uint32_t)chunk)
     {
-        activeMemoryManager->nextFreeChunk = chunk;
+        MemoryManager::activeMemoryManager->nextFreeChunk = chunk;
     }
     else if (!chunk->prev->allocated &&
              ((uint32_t)chunk->prev + chunk->prev->size == (uint32_t)chunk))
     {
-        activeMemoryManager->DeleteChunk(chunk);
+        MemoryManager::activeMemoryManager->DeleteChunk(chunk);
     }
-    else if ((uint32_t)chunk < (uint32_t)activeMemoryManager->nextFreeChunk)
+    else if ((uint32_t)chunk < (uint32_t)MemoryManager::activeMemoryManager->nextFreeChunk)
     {
-        activeMemoryManager->nextFreeChunk = chunk;
+        MemoryManager::activeMemoryManager->nextFreeChunk = chunk;
     }
 
     if ((uint32_t)chunk < (uint32_t)chunk->next && !chunk->next->allocated && (uint32_t)chunk->next + chunk->next->size == (uint32_t)chunk)
     {
-        activeMemoryManager->DeleteChunk(chunk->next);
+        MemoryManager::activeMemoryManager->DeleteChunk(chunk->next);
     }
 }
 
-void *MemoryManager::realloc(void *old_alloc, size_t new_size)
+void *nikos::realloc(void *old_alloc, size_t new_size)
 {
     MemoryChunk *oldHeader = (MemoryChunk *)old_alloc - 1;
     void *newAlloc = malloc(new_size);
