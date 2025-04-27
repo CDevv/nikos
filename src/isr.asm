@@ -1,0 +1,54 @@
+extern exception_handler
+
+%macro ISR_ERR_STUB 1
+isr_stub_%+%1:
+    call exception_handler
+    iretq
+%endmacro
+
+%macro ISR_NO_ERR_STUB 1
+isr_stub_%+%1:
+    call exception_handler
+    iretq
+%endmacro
+
+ISR_NO_ERR_STUB 0
+ISR_NO_ERR_STUB 1
+ISR_NO_ERR_STUB 2
+ISR_NO_ERR_STUB 3
+ISR_NO_ERR_STUB 4
+ISR_NO_ERR_STUB 5
+ISR_NO_ERR_STUB 6
+ISR_NO_ERR_STUB 7
+ISR_ERR_STUB    8
+ISR_NO_ERR_STUB 9
+ISR_ERR_STUB    10
+ISR_ERR_STUB    11
+ISR_ERR_STUB    12
+ISR_ERR_STUB    13
+ISR_ERR_STUB    14
+ISR_NO_ERR_STUB 15
+ISR_NO_ERR_STUB 16
+ISR_NO_ERR_STUB 17
+ISR_NO_ERR_STUB 18
+ISR_NO_ERR_STUB 19
+ISR_NO_ERR_STUB 20
+ISR_NO_ERR_STUB 21
+ISR_NO_ERR_STUB 22
+ISR_NO_ERR_STUB 23
+ISR_NO_ERR_STUB 24
+ISR_NO_ERR_STUB 25
+ISR_NO_ERR_STUB 26
+ISR_NO_ERR_STUB 27
+ISR_NO_ERR_STUB 28
+ISR_NO_ERR_STUB 29
+ISR_NO_ERR_STUB 30
+ISR_NO_ERR_STUB 31
+
+global isr_stub_table
+isr_stub_table:
+%assign i 0 
+%rep    32 
+    dq isr_stub_%+i
+%assign i i+1 
+%endrep
