@@ -4,7 +4,7 @@ MAKEFLAGS += -rR
 
 # This is the name that our final executable will have.
 # Change as needed.
-override OUTPUT := myos
+override OUTPUT := nikos
 
 # User controllable C compiler command.
 CC := cc
@@ -20,15 +20,6 @@ NASMFLAGS := -F dwarf -g
 
 # User controllable linker flags. We set none by default.
 LDFLAGS :=
-
-# Check if CC is Clang.
-override CC_IS_CLANG := $(shell ! $(CC) --version 2>/dev/null | grep 'clang' >/dev/null 2>&1; echo $$?)
-
-# If the C compiler is Clang, set the target as needed.
-ifeq ($(CC_IS_CLANG),1)
-    override CC += \
-        -target x86_64-unknown-none
-endif
 
 # Internal C flags that should not be changed by the user.
 override CFLAGS += \
@@ -88,29 +79,29 @@ all: bin/$(OUTPUT) image.iso
 -include $(HEADER_DEPS)
 
 # Link rules for the final executable.
-bin/$(OUTPUT): GNUmakefile linker.ld $(OBJ)
+bin/$(OUTPUT): linker.ld $(OBJ)
 	mkdir -p "$$(dirname $@)"
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJ) -o $@
 
 # Compilation rules for *.c files.
-obj/%.c.o: src/%.c GNUmakefile
+obj/%.c.o: src/%.c
 	mkdir -p "$$(dirname $@)"
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 # Compilation rules for *.S files.
-obj/%.S.o: src/%.S GNUmakefile
+obj/%.S.o: src/%.S
 	mkdir -p "$$(dirname $@)"
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 # Compilation rules for *.asm (nasm) files.
-obj/%.asm.o: src/%.asm GNUmakefile
+obj/%.asm.o: src/%.asm
 	mkdir -p "$$(dirname $@)"
 	nasm $(NASMFLAGS) $< -o $@
 
 image.iso:
 	mkdir -p iso
 	mkdir -p iso/boot
-	cp -v bin/myos iso/boot
+	cp -v bin/nikos iso/boot
 	cp -v external/* iso/boot
 	mkdir -p iso/boot/limine
 	cp -v limine.conf limine/limine-bios.sys limine/limine-bios-cd.bin \

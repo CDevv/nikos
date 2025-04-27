@@ -15,6 +15,7 @@ struct Framebuffer
 };
 
 void initiateVGA();
+void putPixel(int x, int y);
 
 extern struct Framebuffer *framebuffer;
 

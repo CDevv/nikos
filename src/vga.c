@@ -28,3 +28,10 @@ void initiateVGA()
 
     framebuffer = &fb;
 }
+
+void putPixel(int x, int y)
+{
+    unsigned int *pixPtr = (unsigned int *)framebuffer->base_address;
+    
+    *(unsigned int *)(pixPtr + x + (y * framebuffer->pixels_per_scan_line)) = 0xffffffff;
+}

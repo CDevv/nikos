@@ -43,7 +43,6 @@ void print(const char *str)
 
 void putchar(char c, unsigned int xOff, unsigned int yOff)
 {
-    unsigned int *pixPtr = (unsigned int *)framebuffer->base_address;
     char *fontPtr = (char *)font->glyph_buffer + (c * font->psf1_header->charsize);
 
     for (unsigned long y = yOff; y < yOff + glyph_height; y++)
@@ -52,7 +51,7 @@ void putchar(char c, unsigned int xOff, unsigned int yOff)
         {
             if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0)
             {
-                *(unsigned int *)(pixPtr + x + (y * framebuffer->pixels_per_scan_line)) = 0xffffffff;
+                putPixel(x, y);
             }
         }
         fontPtr++;
